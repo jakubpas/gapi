@@ -1,6 +1,6 @@
 <?php
 
-namespace JakubPas;
+namespace JakubPas\Gapi;
 
 use Exception;
 
@@ -10,7 +10,7 @@ use Exception;
  * @author Jakub Pas
  * @package Darkplanet\Google
  */
-class GapiAccountEntry
+class AccountEntry
 {
 
     private $properties = array();
@@ -55,7 +55,7 @@ class GapiAccountEntry
             throw new Exception('No such function "' . $name . '"');
         }
         $name = preg_replace('/^get/', '', $name);
-        $property_key = Gapi::array_key_exists_nc($name, $this->properties);
+        $property_key = Connector::array_key_exists_nc($name, $this->properties);
         if ($property_key) {
             return $this->properties[$property_key];
         }

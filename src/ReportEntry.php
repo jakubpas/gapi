@@ -1,6 +1,6 @@
 <?php
 
-namespace JakubPas;
+namespace JakubPas\Gapi;
 
 use Exception;
 
@@ -10,7 +10,7 @@ use Exception;
  * @author Jakub Pas
  * @package DarkPlanet\Google
  */
-class GapiReportEntry {
+class ReportEntry {
 
     private $metrics = array();
     private $dimensions = array();
@@ -66,11 +66,11 @@ class GapiReportEntry {
             throw new Exception('No such function "' . $name . '"');
         }
         $name = preg_replace('/^get/', '', $name);
-        $metric_key = Gapi::array_key_exists_nc($name, $this->metrics);
+        $metric_key = Connector::array_key_exists_nc($name, $this->metrics);
         if ($metric_key) {
             return $this->metrics[$metric_key];
         }
-        $dimension_key = Gapi::array_key_exists_nc($name, $this->dimensions);
+        $dimension_key = Connector::array_key_exists_nc($name, $this->dimensions);
         if ($dimension_key) {
             return $this->dimensions[$dimension_key];
         }
