@@ -1,6 +1,6 @@
 <?php
 
-namespace JakubPas;
+namespace JakubPas\Gapi;
 
 use Exception;
 
@@ -10,7 +10,7 @@ use Exception;
  * @author Jakub Pas
  * @package DarkPlanet\Google
  */
-class Gapi
+class Connector
 {
     const http_interface = 'auto'; //'auto': autodetect, 'curl' or 'fopen'
     const client_login_url = 'https://www.google.com/accounts/ClientLogin';
@@ -33,7 +33,7 @@ class Gapi
      * @param string $email
      * @param string $password
      * @param string $token
-     * @return Gapi
+     * @return Connector
      */
     public function __construct($email, $password, $token = null)
     {
@@ -64,7 +64,7 @@ class Gapi
     public function requestAccountData($start_index = 1, $max_results = 20)
     {
         $response = $this->httpRequest(
-            Gapi::account_data_url,
+            Connector::account_data_url,
             array('start-index' => $start_index, 'max-results' => $max_results),
             null,
             $this->generateAuthHeader()
@@ -158,8 +158,8 @@ class Gapi
         $parameters['end-date'] = $end_date;
         $parameters['start-index'] = $start_index;
         $parameters['max-results'] = $max_results;
-        $parameters['prettyprint'] = Gapi::dev_mode ? 'true' : 'false';
-        $response = $this->httpRequest(Gapi::report_data_url, $parameters, null, $this->generateAuthHeader());
+        $parameters['prettyprint'] = Connector::dev_mode ? 'true' : 'false';
+        $response = $this->httpRequest(Connector::report_data_url, $parameters, null, $this->generateAuthHeader());
         //HTTP 2xx
         if (substr($response['code'], 0, 1) == '2') {
             return $this->reportObjectMapper($response['body']);
@@ -233,7 +233,7 @@ class Gapi
             }
             $properties['title'] = strval($entry->title);
             $properties['updated'] = strval($entry->updated);
-            $results[] = new GapiAccountEntry($properties);
+            $results[] = new AccountEntry($properties);
         }
         $this->account_root_parameters = $account_root_parameters;
         $this->results = $results;
@@ -300,7 +300,7 @@ class Gapi
                     $dimension->attributes()->value
                 );
             }
-            $results[] = new GapiReportEntry($metrics, $dimensions);
+            $results[] = new ReportEntry($metrics, $dimensions);
         }
         $this->report_root_parameters = $report_root_parameters;
         $this->report_aggregate_metrics = $report_aggregate_metrics;
@@ -320,10 +320,10 @@ class Gapi
             'accountType' => 'GOOGLE',
             'Email' => $email,
             'Passwd' => $password,
-            'source' => Gapi::interface_name,
+            'source' => Connector::interface_name,
             'service' => 'analytics'
         );
-        $response = $this->httpRequest(Gapi::client_login_url, null, $post_variables);
+        $response = $this->httpRequest(Connector::client_login_url, null, $post_variables);
         //Convert newline delimited variables into url format then import to array
         parse_str(str_replace(array("\n", "\r\n"), '&', $response['body']), $auth_token);
         if (substr($response['code'], 0, 1) != '2' || !is_array($auth_token) || empty($auth_token['Auth'])) {
@@ -352,8 +352,8 @@ class Gapi
      */
     protected function httpRequest($url, $get_variables = null, $post_variables = null, $headers = null)
     {
-        $interface = Gapi::http_interface;
-        if (Gapi::http_interface == 'auto') {
+        $interface = Connector::http_interface;
+        if (Connector::http_interface == 'auto') {
             if (function_exists('curl_exec')) {
                 $interface = 'curl';
             } else {
@@ -365,7 +365,7 @@ class Gapi
         } elseif ($interface == 'fopen') {
             return $this->fopenRequest($url, $get_variables, $post_variables, $headers);
         } else {
-            throw new Exception('Invalid http interface defined. No such interface "' . Gapi::http_interface . '"');
+            throw new Exception('Invalid http interface defined. No such interface "' . Connector::http_interface . '"');
         }
     }
 
@@ -502,11 +502,11 @@ class Gapi
             throw new Exception('No such function "' . $name . '"');
         }
         $name = preg_replace('/^get/', '', $name);
-        $parameter_key = Gapi::array_key_exists_nc($name, $this->report_root_parameters);
+        $parameter_key = Connector::array_key_exists_nc($name, $this->report_root_parameters);
         if ($parameter_key) {
             return $this->report_root_parameters[$parameter_key];
         }
-        $aggregate_metric_key = Gapi::array_key_exists_nc($name, $this->report_aggregate_metrics);
+        $aggregate_metric_key = Connector::array_key_exists_nc($name, $this->report_aggregate_metrics);
         if ($aggregate_metric_key) {
             return $this->report_aggregate_metrics[$aggregate_metric_key];
         }
