@@ -1,7 +1,7 @@
 ## Synopsis
 
-GAPI is an update version of Google Analytics PHP Interface. The Classes files are separated and the code formatting updated. There composer-based auto-loading mechanism was introduced.
-The package utilizes deprecated since 2013 authorisation mechanism (login and password). However it is still supported by google.
+GAPI is an updated version of Google Analytics PHP Interface. The class files are separated and the code formatting was updated. There composer-based auto-loading mechanism was introduced.
+The package utilizes authorisation mechanism deprecated since 2013 (login and password). However it is still supported by google.
 
 ## Code Example
 
