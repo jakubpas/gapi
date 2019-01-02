@@ -54,8 +54,8 @@ The test are yet to be added.
 
 ## Contributors
 
-Jakub Pas <jakubpas@gmail.com> 2015
-Stig Manning <stig@sdm.co.nz> 2009
+Jakub Pas 2015
+Stig Manning 2009
 
 ## License
 
